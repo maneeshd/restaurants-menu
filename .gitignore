@@ -3,4 +3,4 @@ __pycache__/
 .idea/
 .vscode/
 *.db
-oauth_data/
+oauth_data/*.json

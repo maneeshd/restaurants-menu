@@ -1,0 +1,132 @@
+html, body {
+    font-family: Roboto, Helvetica, sans-serif;
+    margin: 0;
+}
+
+html {
+  font-size: 1rem;
+}
+
+@include media-breakpoint-up(sm) {
+  html {
+    font-size: 1.2rem;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  html {
+    font-size: 1.4rem;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  html {
+    font-size: 1.6rem;
+  }
+}
+
+.bg-darkBlue {
+    background-color: rgb(52, 73, 94);
+}
+
+.text-darkBlue {
+    color: rgb(52, 73, 94);
+}
+
+.bg-medGrey {
+    background-color: rgb(236, 240, 241);
+}
+
+.bg-lightGrey {
+    background-color: rgb(243, 244, 245);
+}
+
+.btn-group-xs > .btn,
+.btn-xs {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.875rem;
+    line-height: 0.5;
+    border-radius: 0.2rem;
+}
+
+.grow {
+    transition: all .2s ease-in-out;
+}
+.grow:hover {
+    transform: scale(1.2);
+    background-color: rgb(52, 73, 94);
+}
+
+.grow2 {
+    transition: all .2s ease-in-out;
+}
+.grow2:hover {
+    transform: scale(1.25);
+}
+
+#login, #logout {
+    transition: all .17s ease-in-out;
+    cursor: pointer;
+}
+#login:hover, #logout:hover {
+    font-weight: 700;
+}
+
+.avatar {
+    vertical-align: middle !important;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50% !important;
+}
+
+.customGPlusSignIn {
+    display: inline-block;
+    background: white;
+    color: #444;
+    width: 240px;
+    border-radius: 5px;
+    border: thin solid #888;
+    box-shadow: 1px 1px 1px grey;
+    white-space: nowrap;
+    transition: all .2s ease-in-out;
+}
+
+.customGPlusSignIn:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+span.label {
+    font-family: serif;
+    font-weight: normal;
+}
+
+span.icon {
+    background: url('../img/gLogo.png') transparent 5px 50% no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+    width: 42px;
+    height: 42px;
+}
+
+span.buttonText {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 0px;
+    padding-right: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    /* Use the Roboto font that is loaded in the <head> */
+    font-family: 'Roboto', sans-serif;
+}
+
+#ownerBadge {
+    vertical-align: super;
+}
+
+.grow1 {
+    transition: all .2s ease-in-out;
+}
+.grow1:hover {
+    transform: scale(1.1);
+}

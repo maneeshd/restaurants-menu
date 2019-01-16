@@ -1060,6 +1060,217 @@ def delete_menu_item(rid, mid):
                 db_session.close()
 
 
+@APP.route("/api/v1/restaurants/")
+@APP.route("/api/v1/restaurants")
+def api_get_all_restaurants():
+    db_session = None
+    try:
+        db_session = DB_SESSION()
+        result = db_session.query(Restaurant).all()
+        if result:
+            restaurants = [row.serialize for row in result]
+            return jsonify(restaurants)
+        else:
+            raise NoResultFound
+    except NoResultFound:
+        return jsonify(dict(
+            ERROR="No restuarants were found!"
+        ))
+    except Exception as exp:
+        print("[ApiError][GetAllRestaurants]", exp)
+        return Response(
+            response=dump_json_string({
+                "ERROR": "Oops! Server is not feeling good."
+            }),
+            status=500,
+            mimetype="application/json",
+            content_type="application/json; charset=utf-8"
+        )
+    finally:
+        if db_session:
+            db_session.close()
+
+
+@APP.route("/api/v1/restaurant/<int:rid>/")
+@APP.route("/api/v1/restaurant/<int:rid>")
+def api_restaurant_detail(rid):
+    db_session = None
+    try:
+        db_session = DB_SESSION()
+        result = db_session.query(Restaurant). \
+            filter_by(rid=rid). \
+            join(Restaurant.user). \
+            with_entities(Restaurant.rid, Restaurant.name, User.name). \
+            one()
+        if result:
+            return jsonify(dict(
+                rid=result[0],
+                name=result[1],
+                owner=result[2]
+            ))
+        else:
+            raise NoResultFound
+    except NoResultFound:
+        return jsonify(dict(
+            ERROR="Restaurant Not Found"
+        ))
+    except Exception as exp:
+        print("[ApiError][GetRestaurantDetail]", exp)
+        return Response(
+            response=dump_json_string({
+                "ERROR": "Oops! Server is not feeling good."
+            }),
+            status=500,
+            mimetype="application/json",
+            content_type="application/json; charset=utf-8"
+        )
+    finally:
+        if db_session:
+            db_session.close()
+
+
+@APP.route("/api/v1/restaurants/<int:rid>/menu/")
+@APP.route("/api/v1/restaurants/<int:rid>/menu")
+def api_menu_items(rid):
+    db_session = None
+    try:
+        db_session = DB_SESSION()
+        result = db_session.query(MenuItem). \
+            filter_by(rid=rid). \
+            all()
+        menu_items = list()
+        if result:
+            menu_items = [row.serialize for row in result]
+        return jsonify(menu_items)
+    except NoResultFound:
+        return jsonify(list())
+    except Exception as exp:
+        print("[ApiError][GetMenuItems]", exp)
+        return Response(
+            response=dump_json_string({
+                "ERROR": "Oops! Server is not feeling good."
+            }),
+            status=500,
+            mimetype="application/json",
+            content_type="application/json; charset=utf-8"
+        )
+    finally:
+        if db_session:
+            db_session.close()
+
+
+@APP.route("/api/v1/restaurants/<int:rid>/menu/<int:mid>/")
+@APP.route("/api/v1/restaurants/<int:rid>/menu/<int:mid>")
+def api_menu_item_detail(rid, mid):
+    db_session = None
+    try:
+        db_session = DB_SESSION()
+        result = db_session.query(MenuItem). \
+            filter_by(rid=rid, mid=mid). \
+            one()
+        if result:
+            return jsonify(result.serialize)
+        else:
+            raise NoResultFound
+    except NoResultFound:
+        return jsonify(list())
+    except Exception as exp:
+        print("[ApiError][GetMenuItemDetail]", exp)
+        return Response(
+            response=dump_json_string({
+                "ERROR": "Oops! Server is not feeling good."
+            }),
+            status=500,
+            mimetype="application/json",
+            content_type="application/json; charset=utf-8"
+        )
+    finally:
+        if db_session:
+            db_session.close()
+
+
+@APP.route("/api/v1/get_owner_for_restaurant")
+def is_user_the_owner():
+    db_session = None
+    rid = request.args.get("rid")
+    if rid:
+        try:
+            db_session = DB_SESSION()
+            result = db_session.query(User). \
+                join(User.restaurant). \
+                filter_by(rid=rid). \
+                one()
+            if result:
+                return jsonify(result.serialize)
+            else:
+                raise NoResultFound
+        except NoResultFound:
+            return jsonify(dict())
+        except Exception as exp:
+            print("[APIError][GetRestaurantOwner]", exp)
+            return Response(
+                response=dump_json_string({
+                    "ERROR": "Oops! Server is not feeling good."
+                }),
+                status=500,
+                mimetype="application/json",
+                content_type="application/json; charset=utf-8"
+            )
+        finally:
+            if db_session:
+                db_session.close()
+    else:
+        return Response(
+            response=dump_json_string({
+                "ERROR": "rid must be passed as url parameter(?rid=1)"
+            }),
+            status=400,
+            mimetype="application/json",
+            content_type="application/json; charset=utf-8"
+        )
+
+
+@APP.route("/api/v1/get_restaurants_for_user")
+def get_restauratnts_for_user():
+    db_session = None
+    user_id = request.args.get("user_id")
+    if user_id:
+        try:
+            db_session = DB_SESSION()
+            result = db_session.query(Restaurant). \
+                filter_by(user_id=user_id). \
+                all()
+            if result:
+                restaurants = [row.serialize for row in result]
+                return jsonify(restaurants)
+            else:
+                raise NoResultFound
+        except NoResultFound:
+            return jsonify(list())
+        except Exception as exp:
+            print("[APIError][GetRestaurantOwner]", exp)
+            return Response(
+                response=dump_json_string({
+                    "ERROR": "Oops! Server is not feeling good."
+                }),
+                status=500,
+                mimetype="application/json",
+                content_type="application/json; charset=utf-8"
+            )
+        finally:
+            if db_session:
+                db_session.close()
+    else:
+        return Response(
+            response=dump_json_string({
+                "ERROR": "user_id must be passed as url parameter(?user_id=1)"
+            }),
+            status=400,
+            mimetype="application/json",
+            content_type="application/json; charset=utf-8"
+        )
+
+
 if __name__ == '__main__':
     if environ.get("PORT"):
         PORT = environ.get("PORT")

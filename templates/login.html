@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container w-50 mx-auto my-3 pt-2 pb-4 bg-lightGrey rounded text-center">
+    <p id="loginMessage" class="display-4 text-darkBlue text-center">Login</p>
+    <div class="w-100 mb-4">
+        <div id="customGSignInBtn"
+             class="customGPlusSignIn shadow"
+             onclick="forceSignIn();"
+        >
+            <span class="icon"></span>
+            <span class="buttonText">Continue with Google</span>
+        </div>
+    </div>
+    <div class="w-100">
+        <div class="fb-login-button shadow grow1 rounded"
+             data-width="120"
+             data-max-rows="1"
+             data-size="large"
+             data-button-type="continue_with"
+             data-show-faces="false"
+             data-auto-logout-link="true"
+             data-use-continue-as="false"
+             data-onlogin="fbOnSignIn();"
+             data-scope="public_profile,email"
+             id="fbLoginBtn"
+        >
+        </div>
+    </div>
+</div>
+<script>
+    function forceSignIn() {
+        const gAuth = gapi.auth2.getAuthInstance();
+        gSignIn(gAuth);
+    }
+
+    function fbOnSignIn() {
+        FB.getLoginStatus(fbAuthorize);
+    }
+</script>
+{% endblock %}

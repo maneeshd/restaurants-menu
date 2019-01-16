@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="jumbotron px-2 pt-2 pb-4 mx-1 mt-1 text-center">
+
+        {% if restricted_view %}
+            <p class="display-4 text-darkBlue">{{ restaurant.name|title }}</p>
+            <p class="lead text-muted">Read only mode since you are not the owner of this restaurant.</p>
+        {% else %}
+            <p>
+                <span class="display-4 text-darkBlue">{{ restaurant.name|title }}</span>
+                <span id="ownerBadge" class="badge badge-pill bg-darkBlue text-light">Owner</span>
+            </p>
+            <a class="btn btn-sm btn-outline-success mb-2 rounded shadow grow2 mx-2"
+               href="{{ url_for('add_menu_item', rid=restaurant.rid) }}"
+               title="Add a new menu item"
+            >
+                Add new item
+            </a>
+            <a class="btn btn-sm btn-outline-primary mb-2 rounded shadow grow2 mx-2"
+               href="{{ url_for('edit_restaurant', rid=restaurant.rid) }}"
+               title="Edit restaurants' name"
+            >
+                Edit restaurant
+            </a>
+            <a class="btn btn-sm btn-outline-danger mb-2 rounded shadow grow2 mx-2"
+               href="{{ url_for('delete_restaurant', rid=restaurant.rid) }}"
+               title="Delete restaurant"
+            >
+                Delete restaurant
+            </a>
+        {% endif %}
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3">
+                <h5 class="text-center text-darkBlue"><u>Appetizers</u></h5>
+                {% for item in appetizers %}
+                    <ul class="list-unstyled bg-lightGrey text-darkBlue shadow text-center px-1" title="{{ item.name|title }} | Appetizer">
+                        <li><b>{{ item.name|title }}</b></li>
+                        <li>{{ item.description }}</li>
+                        <li class="font-weight-bold"><em>{{ item.price }}</em></li>
+                        {% if not restricted_view %}
+                            <li class="text-right p-1">
+                                <a class="btn btn-xs m-0 p-0 grow2"
+                                   title="Edit menu item"
+                                   href="{{ url_for('edit_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Edit</small>
+                                </a>
+                                <b>|</b>
+                                <a class="btn btn-xs m-0 p-0 grow2 text-danger"
+                                   title="Delete menu item"
+                                   href="{{ url_for('delete_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Delete</small>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted text-center font-weight-light text-darkBlue">No items</p>
+                {% endfor %}
+            </div>
+            <div class="col-3">
+                <h5 class="text-center text-darkBlue"><u>Entrees</u></h5>
+                {% for item in entrees %}
+                    <ul class="list-unstyled bg-lightGrey text-darkBlue shadow text-center px-1" title="{{ item.name|title }} | Entree">
+                        <li><b>{{ item.name|title }}</b></li>
+                        <li>{{ item.description }}</li>
+                        <li class="font-weight-bold"><em>{{ item.price }}</em></li>
+                        {% if not restricted_view %}
+                            <li class="text-right p-1">
+                                <a class="btn btn-xs m-0 p-0 grow2"
+                                   title="Edit menu item"
+                                   href="{{ url_for('edit_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Edit</small>
+                                </a>
+                                <b>|</b>
+                                <a class="btn btn-xs m-0 p-0 grow2 text-danger"
+                                   title="Delete menu item"
+                                   href="{{ url_for('delete_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Delete</small>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted text-center font-weight-light text-darkBlue">No items</p>
+                {% endfor %}
+            </div>
+            <div class="col-3">
+                <h5 class="text-center text-darkBlue"><u>Desserts</u></h5>
+                {% for item in desserts %}
+                    <ul class="list-unstyled bg-lightGrey text-darkBlue shadow text-center px-1" title="{{ item.name|title }} | Desert">
+                        <li><b>{{ item.name|title }}</b></li>
+                        <li>{{ item.description }}</li>
+                        <li class="font-weight-bold"><em>{{ item.price }}</em></li>
+                        {% if not restricted_view %}
+                            <li class="text-right p-1">
+                                <a class="btn btn-xs m-0 p-0 grow2"
+                                   title="Edit menu item"
+                                   href="{{ url_for('edit_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Edit</small>
+                                </a>
+                                <b>|</b>
+                                <a class="btn btn-xs m-0 p-0 grow2 text-danger"
+                                   title="Delete menu item"
+                                   href="{{ url_for('delete_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Delete</small>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted text-center font-weight-light text-darkBlue">No items</p>
+                {% endfor %}
+            </div>
+            <div class="col-3">
+                <h5 class="text-center text-darkBlue"><u>Beverages</u></h5>
+                {% for item in beverages %}
+                    <ul class="list-unstyled bg-lightGrey text-darkBlue shadow text-center px-1" title="{{ item.name|title }} | Beverage">
+                        <li><b>{{ item.name|title }}</b></li>
+                        <li>{{ item.description }}</li>
+                        <li class="font-weight-bold"><em>{{ item.price }}</em></li>
+                        {% if not restricted_view %}
+                            <li class="text-right p-1">
+                                <a class="btn btn-xs m-0 p-0 grow2"
+                                   title="Edit menu item"
+                                   href="{{ url_for('edit_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Edit</small>
+                                </a>
+                                <b>|</b>
+                                <a class="btn btn-xs m-0 p-0 grow2 text-danger"
+                                   title="Delete menu item"
+                                   href="{{ url_for('delete_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                >
+                                    <small>Delete</small>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted text-center font-weight-light text-darkBlue">No items</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if others %}
+            <h5 class="text-center text-darkBlue"><u>Others</u></h5>
+            <div class="row">
+                {% for item in others %}
+                    <div class="col-3">
+                        <ul class="list-unstyled bg-lightGrey text-darkBlue shadow text-center p-1" title="{{ item.name|title }} | Other/Uncategorized">
+                            <li><b>{{ item.name|title }}</b></li>
+                            <li>{{ item.description }}</li>
+                            <li class="font-weight-bold"><em>{{ item.price }}</em></li>
+                            {% if not restricted_view %}
+                                <li class="text-right p-1">
+                                    <a class="btn btn-xs m-0 p-0 grow2"
+                                       title="Edit menu item"
+                                       href="{{ url_for('edit_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                    >
+                                        <small>Edit</small>
+                                    </a>
+                                    <b>|</b>
+                                    <a class="btn btn-xs m-0 p-0 grow2 text-danger"
+                                       title="Delete menu item"
+                                       href="{{ url_for('delete_menu_item', rid=restaurant.rid, mid=item.mid) }}"
+                                    >
+                                        <small>Delete</small>
+                                    </a>
+                                </li>
+                        {% endif %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+            <small class="text-muted">*Others implies that no course info is present for the items.</small>
+        {% endif %}
+    </div>
+{% endblock %}

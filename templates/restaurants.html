@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="container-fluid mx-auto my-2  bg-medGrey rounded">
+        <p class="text-center text-darkBlue display-4 text-underline"><u>Restaurants</u></p>
+        <div class="container-fluid w-100 text-center p-0">
+            <a class="btn btn-outline-success mb-3 rounded shadow"
+               href="{{ url_for('add_restaurant') }}"
+               title="Add a new restaurant"
+            >
+                Add new restaurant
+            </a>
+        </div>
+        <div class="row text-center align-items-center justify-content-center">
+            {% for restaurant in restaurants %}
+                <div class="col-md-4">
+                    <a class="lead btn btn-outline-secondary rounded shadow text-darkBlue p-4 m-4 grow"
+                       href="{{ url_for('restaurant_menu', rid=restaurant.rid) }}"
+                       title="Open {{ restaurant.name|e|title }}s' menu"
+                    >
+                        {{ restaurant.name|title }}
+                    </a>
+                </div>
+            {% else %}
+                <p class="lead text-danger text-center">! Nothing to show here !</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

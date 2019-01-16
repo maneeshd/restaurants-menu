@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Restaurants</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/roboto.css') }}" >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer type="text/javascript"></script>
+</head>
+<body>
+    <div id="fb-root"></div>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId            : '{{ fb_app_id }}',
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : '{{ fb_api_ver }}',
+          state            : true,
+          cookie           : true
+        });
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-darkBlue shadow-sm rounded">
+        <a class="navbar-brand mr-2" href="/" title="Restaurants"><b>Restaurants</b></a>
+        {% if restaurant %}
+            <a class="navbar-brand mr-2"
+               href="{{ url_for('restaurant_menu', rid=restaurant.rid) }}"
+               title="{{ restaurant.name|title }}s' Menu"
+            >
+                <b>&rightarrow;&nbsp;{{ restaurant.name|title }}</b>
+            </a>
+        {% endif %}
+        {% if item %}
+            <a class="navbar-brand mr-2"
+               href="#"
+               title="{{ item.name|title }}"
+            >
+                <b>&rightarrow;&nbsp;{{ item.name|title }}</b>
+            </a>
+        {% endif %}
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                {% if user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+                            <span title="Logged in as {{ user.name }}"
+                            >
+                                <img class="avatar" src="{{ user.picture }}" alt="Avatar">
+                                {{ user.name }}
+                            </span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item" id="logout" onclick="signOut();" title="Logout">Logout</button>
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show px-2 mb-1" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close Notification">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% block body %}
+    {% endblock %}
+    <script type="text/javascript">
+        let isFbLoggedIn = false;
+        let isGLoggedIn = false;
+
+        const gauth_config = {
+            client_id: "{{ gauth_client_id }}",
+            access_type: "offline",
+            include_granted_scopes: true,
+            scope: "openid email profile"
+        };
+
+        const gAuth2Init = () => {
+            gapi.load('auth2', () => {
+                gapi.auth2.init(gauth_config).then(
+                    (gAuth) => {
+                        isGLoggedIn = gAuth.isSignedIn.get();
+                        if(isGLoggedIn && location.pathname === "/login" ) {
+                            $("#customGSignInBtn").hide();
+                            $("#fbLoginBtn").hide();
+                            $("#loginMessage").text("Redirecting...");
+                            gAuthorize(gAuth.currentUser.get());
+                        } else {
+                            $("#customGSignInBtn").show();
+                        }
+                    },
+                    (error) => {
+                        // On failure
+                        console.log(JSON.stringify(error));
+                        alert("Failed to initialize Google OAuth2 Library");
+                    }
+                )
+            });
+        }
+
+        const gAuthorize = (googleUser) => {
+            const gUserAuthResponse = googleUser.getAuthResponse(true);
+            $.ajax({
+                type: "POST",
+                url: "/gconnect",
+                processData: false,
+                mimeType: "application/json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    csrf_token: "{{ csrf_token|safe }}",
+                    id_token: gUserAuthResponse.id_token,
+                    access_token: gUserAuthResponse.access_token
+                })
+            }).done((result) => {
+                if(result.status === 'OK' || result === 'OK') {
+                    $("#customGSignInBtn").hide();
+                    $("#fbLoginBtn").hide();
+                    $("#loginMessage").text("Signing you in...");
+                    if(location.pathname === "/login") {
+                        window.location.href = "/restaurants"
+                    }
+                } else {
+                    $("#customGSignInBtn").show();
+                    $("#fbLoginBtn").show();
+                    isGLoggedIn = false;
+                    if(!isFbLoggedIn) {
+                       window.location.href = "/login"
+                    }
+                }
+            }).fail((jq_xhr, status, error) => {
+                console.log(`[server-gsignin-error] ${status} :: ${error}`);
+                isGLoggedIn = false;
+            })
+        }
+
+        const gSignIn = (gAuth) => {
+            gAuth.signIn().then(
+                gAuthorize,
+                (error) => {
+                    console.log(JSON.stringify(error));
+                    alert("Google Sign In Failed!");
+                    isGLoggedIn = false;
+                }
+            )
+        }
+
+        const gSignOut = () => {
+            const gAuth = gapi.auth2.getAuthInstance();
+            gAuth.signOut().then(() => {
+                $.ajax({
+                    type: "POST",
+                    url: "/logout",
+                    mimeType: "application/json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ csrf_token: "{{ csrf_token|safe }}" })
+                }).done((response) => {
+                    console.log(`[Logout] ${JSON.stringify(response)}`);
+                    isGLoggedIn = false;
+                }).fail((jq_xhr, status, error) => {
+                    console.log(`[server-gsignout-error] ${status} :: ${error}`);
+                    isGLoggedIn = false;
+                });
+            });
+        }
+
+        const fbInit = () => {
+            FB.getLoginStatus(fbAuthorize);
+        }
+
+        const fbAuthorize = (fbAuthResponse) => {
+            if(fbAuthResponse.status === 'connected') {
+                isFbLoggedIn = true;
+                $.ajax({
+                    type: "POST",
+                    url: "/fbconnect",
+                    processData: false,
+                    mimeType: "application/json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({
+                        csrf_token: "{{ csrf_token|safe }}",
+                        access_token: fbAuthResponse.authResponse.accessToken
+                    })
+                }).done((result) => {
+                    if(result.status === 'OK' || result === 'OK') {
+                        $("#customGSignInBtn").hide();
+                        $("#fbLoginBtn").hide();
+                        $("#loginMessage").text("Signing you in...");
+                        if(location.pathname === "/login") {
+                            console.log("redirect")
+                            window.location.href = "/restaurants"
+                        }
+                    } else {
+                        $("#customGSignInBtn").show();
+                        $("#fbLoginBtn").show();
+                        isFbLoggedIn = false;
+                        if(!isGLoggedIn) {
+                            window.location.href = "/login"
+                        }
+                    }
+                }).fail((jq_xhr, status, error) => {
+                    console.log(`[server-fbsignin-error] ${status} :: ${error}`);
+                    isFbLoggedIn = false;
+                });
+            } else {
+                isFbLoggedIn = false;
+                $("#fbLoginBtn").show();
+            }
+        }
+
+        const fbSignOut = () => {
+            FB.logout((response) => {
+                console.log(`After fbSignOut; login status: ${response.status}`);
+                gAuth.signOut().then(() => {
+                    $.ajax({
+                        type: "POST",
+                        url: "/logout",
+                        mimeType: "application/json",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ csrf_token: "{{ csrf_token|safe }}" })
+                    }).done((response) => {
+                        console.log(`[FbSignOut] ${JSON.stringify(response)}`);
+                        isFbLoggedIn = false;
+                    }).fail((jq_xhr, status, error) => {
+                        console.log(`[server-gsignout-error] ${status} :: ${error}`);
+                        isFbLoggedIn = false;
+                    });
+                });
+            });
+        }
+
+        function signOut() {
+            gSignOut();
+            fbSignOut();
+            window.location.href = "/login";
+        }
+
+        $(window).bind("load", () => {
+            $("#customGSignInBtn").hide();
+            $("#fbLoginBtn").hide();
+            $("#loginMessage").text("Checking sign in status...");
+            gAuth2Init();
+            fbInit();
+            if(!isGLoggedIn && !isFbLoggedIn) {
+                $("#customGSignInBtn").show();
+                $("#fbLoginBtn").show();
+                $("#loginMessage").text("Login");
+            }
+        });
+    </script>
+</body>
+</html>

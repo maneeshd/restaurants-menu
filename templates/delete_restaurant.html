@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container w-50 mx-auto my-3 py-2 bg-medGrey rounded">
+    <h3 class="text-darkBlue text-center my-4 font-weight-normal">Delete {{ restaurant.name|title }}?</h3>
+    <form class="form" action="{{ url_for('delete_restaurant', rid=restaurant.rid) }}" method="post">
+        <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token|safe }}">
+        <div class="form-group text-center">
+            <button class="btn btn-success w-25 m-auto rounded shadow-sm" type="submit">Yes</button>
+            <a class="btn btn-danger w-25 m-auto rounded shadow-sm"
+               href="{{ url_for('restaurant_menu', rid=restaurant.rid) }}"
+            >
+                No
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

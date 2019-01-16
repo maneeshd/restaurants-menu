@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container w-50 mx-auto my-3 py-2 bg-medGrey rounded">
+    <p class="display-4 text-center">{{ restaurant.name|title }}</p>
+    <h3 class="text-darkBlue text-center mb-2"><u>Edit menu item</u></h3>
+    <form class="form text-darkBlue" action="{{ url_for('edit_menu_item', rid=restaurant.rid, mid=item.mid) }}" method="post">
+        <input type="hidden" name="csrf_token" id="csrf_token" value="{{ csrf_token|safe }}">
+        <div class="form-group">
+            <label for="name">Name of the item</label>
+            <input class="form-control text-darkBlue" type="text" id="name" name="name" required maxlength="32" autofocus value="{{ item.name }}">
+        </div>
+        <div class="form-group">
+            <label for="name">Description</label>
+            <textarea class="form-control text-darkBlue" id="desc" name="desc" maxlength="256">{{ item.description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="name">Course</label>
+            <select class="form-control custom-select" id="course" name="course" required>
+                  <option selected value="{{ item.course }}">{{ item.course }}</option>
+                  <option value="Appetizer">Appetizer</option>
+                  <option value="Entree">Entree</option>
+                  <option value="Desert">Desert</option>
+                  <option value="Beverage">Beverage</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="name">Price</label>
+            <input class="form-control text-darkBlue" type="text" id="price" name="price" required maxlength="4" pattern="^\${1}[0-9]+" title="Price prepended with currency symbol" value="{{ item.price }}">
+        </div>
+        <div class="form-group text-center">
+            <button class="btn btn-success w-25 m-auto rounded shadow-sm" type="submit">Submit</button>
+            <a class="btn btn-warning w-25 m-auto rounded shadow-sm" href="{{ url_for('restaurant_menu', rid=restaurant.rid) }}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

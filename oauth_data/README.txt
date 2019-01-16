@@ -8,4 +8,4 @@
     "app_secret": "<app secret for your app>"
   }
 }
-Put the above two files in' oauth_data' dir.
+Put the above two files in 'oauth_data' dir.

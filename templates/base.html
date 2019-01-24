@@ -63,7 +63,12 @@
                         <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
                             <span title="Logged in as {{ user.name }}"
                             >
-                                <img class="avatar" src="{{ user.picture }}" alt="Avatar">
+                                <img class="avatar"
+                                     sizes="50x50"
+                                     width="50px"
+                                     height="50px"
+                                     src="{{ user.picture }}"
+                                     alt="{{ url_for('static', filename='img/jd.png') }}">
                                 {{ user.name }}
                             </span>
                         </a>

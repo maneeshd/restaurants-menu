@@ -1,4 +1,4 @@
-# Item Catalog
+# Restaurants' Menu
 A CRUD WebApp using Flask, SQLAlchemy with Google and Facebook OAuth2 listing various restaurants and their menus and menu items.
 
 Users can view the menu items but only owners of the restaurants can edit/delete menu items and edit/delete restaurants.

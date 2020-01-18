@@ -13,7 +13,7 @@ Any user can add a new restaurant and add menu items to it.
 
 - App uses [SQLAlchemy](https://www.sqlalchemy.org/) as Object Relational Mapper(ORM) to run SQL from Python.
 
-- Data is stored in an [SQLite](https://www.sqlite.org/index.html) database.
+- Data is stored in an [SQLite](https://www.sqlite.org/index.html) database locally for development and uses [PostgreSQL](https://www.postgresql.org/) when hosted in [Heroku](https://www.heroku.com/home).
 
 - App uses [Bootstrap](https://getbootstrap.com/) and [jQuery](https://jquery.com/) in the frontend.
 
